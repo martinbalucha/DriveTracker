@@ -47,7 +47,7 @@ public class MqttBrokerClient : IMqttBrokerClient
         }
 
         var mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(_config.DriveInitiatedTopic)
+            .WithTopicFilter(_config.DriveRegisteredTopic)
             .Build();
 
         await _mqttClient.SubscribeAsync(mqttSubscribeOptions);
