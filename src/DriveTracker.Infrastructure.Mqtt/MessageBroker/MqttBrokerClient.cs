@@ -7,7 +7,7 @@ using MQTTnet.Client;
 
 namespace DriveTracker.Infrastructure.Mqtt.MessageBroker;
 
-public class MqttBrokerClient : IMqttBrokerClient
+public class MqttBrokerClient : IMqttBrokerClient, IDriveUpdatedListener
 {
     private readonly IMediator _mediator;
     private readonly MqttFactory _mqttFactory;
@@ -62,6 +62,24 @@ public class MqttBrokerClient : IMqttBrokerClient
             .Build();
 
         await _mqttClient.DisconnectAsync(disconnectOptions, cancellationToken);
+    }
+
+    public async Task SubscribeToDriveUpdatesAsync(VehicleId vehicleId, DriveId driveId, CancellationToken cancellationToken = default)
+    {
+        var subscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
+            .WithTopicFilter(BuildDriveUpdatesTopicName(vehicleId, driveId))
+            .Build();
+
+        await _mqttClient.SubscribeAsync(subscribeOptions, cancellationToken);
+    }
+
+    public async Task UnsubscribeToDriveUpdatesAsync(VehicleId vehicleId, DriveId driveId, CancellationToken cancellationToken = default)
+    {
+        var unsubscribeOptions = _mqttFactory.CreateUnsubscribeOptionsBuilder()
+            .WithTopicFilter(BuildDriveUpdatesTopicName(vehicleId, driveId))
+            .Build();
+
+        await _mqttClient.UnsubscribeAsync(unsubscribeOptions, cancellationToken);
     }
 
     public void Dispose()
