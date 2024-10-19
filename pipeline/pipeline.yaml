@@ -97,6 +97,7 @@ Resources:
                   - s3:ListBucket
                   - codepipeline:PutJobSuccessResult
                   - codepipeline:PutJobFailureResult
+                  - cloudformation:DescribeStacks
                 Resource: '*'
         - PolicyName: CodeConnectionAccessPolicy
           PolicyDocument:
