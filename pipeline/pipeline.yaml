@@ -189,5 +189,5 @@ Resources:
                 Action:
                   - cloudformation:CreateStack
                   - cloudformation:UpdateStack
+                  - cloudformation:DescribeStacks
                 Resource: "*"
-
