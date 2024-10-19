@@ -190,5 +190,6 @@ Resources:
                 Action:
                   - cloudformation:CreateStack
                   - cloudformation:UpdateStack
-                  - cloudformation:DescribeStacks
+                  - cloudformation:DescribeStacks.
+                  - s3:ListBucket
                 Resource: "*"
