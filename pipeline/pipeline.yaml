@@ -52,7 +52,6 @@ Resources:
                 - Name: SourceOutput
               OutputArtifacts:
                 - Name: BuildOutput
-                - Name: SourceOutput
               Configuration:
                 ProjectName: !Ref DriveTrackerMainBuild
         - Name: Deploy
