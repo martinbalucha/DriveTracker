@@ -100,7 +100,7 @@ Resources:
                 Action:
                   - codepipeline:PutJobSuccessResult
                   - codepipeline:PutJobFailureResult
-                Resource: !GetAtt DriveTrackerPipeline.Arn
+                Resource: '*'
               - Effetct: Allow
                 Action:
                   - cloudformation:DescribeStacks
@@ -164,7 +164,7 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: "*"
-              - Effect:
+              - Effect: Allow
                 Action:
                   - s3:GetObject
                   - s3:PutObject
@@ -178,7 +178,7 @@ Resources:
                 Action:
                   - codepipeline:PutJobSuccessResult
                   - codepipeline:PutJobFailureResult
-                Resource: !GetAtt DriveTrackerPipeline.Arn
+                Resource: '*'
 
   CloudFormationDeployRole:
     Type: AWS::IAM::Role
