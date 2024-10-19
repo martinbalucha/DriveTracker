@@ -4,5 +4,5 @@ public record DriveStatus(
     VehicleId VehicleId,
     DriveId DriveId,
     VehicleStatus VehicleStatus,
-    GeoCoordinate Coordinate,
-    DateTimeOffset RecordedAt);
+    GeoCoordinate Coordinates,
+    DateTimeOffset RecordedAtIso8601);

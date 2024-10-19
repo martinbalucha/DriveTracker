@@ -51,8 +51,10 @@ public class DynamoDbRepository : IDriveStatusRepository
         {
             { nameof(VehicleId), new AttributeValue(driveStatus.VehicleId.Id.ToString())},
             { nameof(DriveId), new AttributeValue(driveStatus.DriveId.Id.ToString()) },
-            { nameof(VehicleStatus), new AttributeValue(vehicleStatusJson)}
-
+            { nameof(VehicleStatus), new AttributeValue(vehicleStatusJson)},
+            { nameof(DriveStatus.RecordedAtIso8601), new AttributeValue(driveStatus.RecordedAtIso8601.ToString("O")) },
+            { nameof(DriveStatus.Coordinates.Latitude), new AttributeValue() { N = driveStatus.Coordinates.Latitude.ToString() } },
+            { nameof(DriveStatus.Coordinates.Longitude), new AttributeValue() { N = driveStatus.Coordinates.Longitude.ToString() } },
         };
     }
 }
