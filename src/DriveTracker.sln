@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35303.130
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DriveTracker", "DriveTracker\DriveTracker.csproj", "{011C83BB-B25B-4783-B00F-73EBC3AC775A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F06DD6A7-111F-4C31-9971-86926630FA24}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriveTracker.Infrastructure.Mqtt", "DriveTracker.Infrastructure.Mqtt\DriveTracker.Infrastructure.Mqtt.csproj", "{68805367-875D-4915-99E6-83595B9D94C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriveTracker.Contracts", "DriveTracker.Contracts\DriveTracker.Contracts.csproj", "{8BB5BAEC-835A-406E-906D-3312C41E1811}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriveTracker.Domain", "DriveTracker.Domain\DriveTracker.Domain.csproj", "{73F91490-D461-47CA-A108-09549BDE6835}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriveTracker.Infrastructure.Aws", "DriveTracker.Infrastructure.Aws\DriveTracker.Infrastructure.Aws.csproj", "{CC086ECF-BFD7-4A87-AFD2-01D159790EED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{011C83BB-B25B-4783-B00F-73EBC3AC775A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{011C83BB-B25B-4783-B00F-73EBC3AC775A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{011C83BB-B25B-4783-B00F-73EBC3AC775A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{011C83BB-B25B-4783-B00F-73EBC3AC775A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68805367-875D-4915-99E6-83595B9D94C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68805367-875D-4915-99E6-83595B9D94C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68805367-875D-4915-99E6-83595B9D94C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68805367-875D-4915-99E6-83595B9D94C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BB5BAEC-835A-406E-906D-3312C41E1811}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BB5BAEC-835A-406E-906D-3312C41E1811}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BB5BAEC-835A-406E-906D-3312C41E1811}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BB5BAEC-835A-406E-906D-3312C41E1811}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73F91490-D461-47CA-A108-09549BDE6835}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73F91490-D461-47CA-A108-09549BDE6835}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73F91490-D461-47CA-A108-09549BDE6835}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73F91490-D461-47CA-A108-09549BDE6835}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC086ECF-BFD7-4A87-AFD2-01D159790EED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC086ECF-BFD7-4A87-AFD2-01D159790EED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC086ECF-BFD7-4A87-AFD2-01D159790EED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC086ECF-BFD7-4A87-AFD2-01D159790EED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {91983EC8-A964-49FB-A26F-F1F6FE89C0FD}
+	EndGlobalSection
+EndGlobal
