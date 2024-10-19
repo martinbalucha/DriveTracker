@@ -1,5 +1,6 @@
-﻿using MediatR;
+﻿using DriveTracker.Contracts.DriveStatusUpdating;
+using MediatR;
 
 namespace DriveTracker.Contracts;
 
-public record DriveStatusUpdated(VehicleId VehicleId, GeoCoordinate Coordinate) : IRequest;
+public record DriveStatusUpdated(DriveStatus Status) : IRequest;
