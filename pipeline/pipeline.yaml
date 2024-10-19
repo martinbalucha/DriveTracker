@@ -9,6 +9,7 @@ Resources:
     Properties:
       VersioningConfiguration:
         Status: Enabled
+        BucketName: !Sub "${AWS::StackName}-pipelineartifactbucket"
       AccessControl: Private
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
