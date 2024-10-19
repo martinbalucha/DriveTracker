@@ -101,7 +101,7 @@ Resources:
                   - codepipeline:PutJobSuccessResult
                   - codepipeline:PutJobFailureResult
                 Resource: '*'
-              - Effetct: Allow
+              - Effect: Allow
                 Action:
                   - cloudformation:DescribeStacks
                 Resource: '*'
