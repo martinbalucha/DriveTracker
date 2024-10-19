@@ -69,9 +69,9 @@ Resources:
                 StackName: DriveTracker-Main
                 TemplatePath: BuildOutput::deploy/application.yml
               InputArtifacts:
-                -Name: BuildOutput
+                - Name: BuildOutput
               OutputArtifacts:
-                -Name: DeployOutput
+                - Name: DeployOutput
               RunOrder: 1
 
   CodePipelineRole:
