@@ -95,8 +95,14 @@ Resources:
                   - s3:PutObject
                   - s3:GetObject
                   - s3:ListBucket
+                Resource: !GetAtt PipelineArtifactBucket.Arn
+              - Effect: Allow
+                Action:
                   - codepipeline:PutJobSuccessResult
                   - codepipeline:PutJobFailureResult
+                Resource: !GetAtt DriveTrackerPipeline.Arn
+              - Effetct: Allow
+                Action:
                   - cloudformation:DescribeStacks
                 Resource: '*'
         - PolicyName: CodeConnectionAccessPolicy
@@ -157,10 +163,13 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
+                Resource: "*"
+              - Effect:
+                Action:
                   - s3:GetObject
                   - s3:PutObject
                   - s3:ListBucket
-                Resource: "*"
+                Resource: !GetAtt PipelineArtifactBucket.Arn
         - PolicyName: CodePipelineAccess
           PolicyDocument:
             Version: "2012-10-17"
@@ -169,7 +178,7 @@ Resources:
                 Action:
                   - codepipeline:PutJobSuccessResult
                   - codepipeline:PutJobFailureResult
-                Resource: "*"
+                Resource: !GetAtt DriveTrackerPipeline.Arn
 
   CloudFormationDeployRole:
     Type: AWS::IAM::Role
@@ -191,5 +200,4 @@ Resources:
                   - cloudformation:CreateStack
                   - cloudformation:UpdateStack
                   - cloudformation:DescribeStacks.
-                  - s3:ListBucket
                 Resource: "*"
