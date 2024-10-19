@@ -56,7 +56,7 @@ Resources:
                 ProjectName: !Ref DriveTrackerMainBuild
         - Name: Deploy
           Actions:
-            - Name: Deploy Stack
+            - Name: DeployStack
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS
