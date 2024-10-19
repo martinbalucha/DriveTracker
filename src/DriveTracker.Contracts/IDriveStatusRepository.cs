@@ -8,10 +8,10 @@ namespace DriveTracker.Contracts;
 public interface IDriveStatusRepository
 {
     /// <summary>
-    /// 
+    /// Stores a new drive status update.
     /// </summary>
-    /// <param name="driveStatusCancellationToken"></param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="driveStatus">A new drive status update</param>
+    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns></returns>
-    Task CreateAsync(DriveStatus driveStatus, CancellationToken cancellationToken = default);
+    Task StoreAsync(DriveStatus driveStatus, CancellationToken cancellationToken = default);
 }

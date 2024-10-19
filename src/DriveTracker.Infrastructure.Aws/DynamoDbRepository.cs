@@ -23,7 +23,7 @@ public class DynamoDbRepository : IDriveStatusRepository
         _logger = logger;
     }
 
-    public async Task CreateAsync(DriveStatus driveStatus, CancellationToken cancellationToken = default)
+    public async Task StoreAsync(DriveStatus driveStatus, CancellationToken cancellationToken = default)
     {
       
         var putItemRequest = new PutItemRequest
@@ -43,7 +43,7 @@ public class DynamoDbRepository : IDriveStatusRepository
         
     }
 
-    private Dictionary<string, AttributeValue> ConvertDriveUpdate(DriveStatus driveStatus)
+    private static Dictionary<string, AttributeValue> ConvertDriveUpdate(DriveStatus driveStatus)
     {
         string vehicleStatusJson = JsonSerializer.Serialize(driveStatus.VehicleStatus);
 
