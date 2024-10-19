@@ -60,7 +60,7 @@ Resources:
             - Name: Deploy Stack
               InputArtifacts:
                 - Name: BuildOutput
-              ActionType:
+              ActionTypeId:
                 Category: Deploy
                 Owner: AWS
                 Provider: CloudFormation
