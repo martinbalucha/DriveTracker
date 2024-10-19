@@ -23,5 +23,3 @@ Resources:
       KeySchema:
         - AttributeName: VehicleId
           KeyType: HASH
-      GlobalSecondaryIndexes:
-        - IndexName:  
