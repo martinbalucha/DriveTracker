@@ -1,0 +1,152 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: 'DriveTracker CI/CD pipeline'
+
+Resources:
+
+  PipelineArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+
+  DriveTrackerPipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: drive-tracker-cicd
+      ArtifactStore:
+        Type: S3
+        Location: !Ref PipelineArtifactBucket
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: GitHubSource
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: CodeStarSourceConnection
+                Version: '1'
+              Configuration:
+                ConnectionArn: !Sub arn:aws:codeconnections:us-east-1:240994269822:connection/8a018c9f-47b6-4f5a-8a38-3e274efed4fc
+                FullRepositoryId: "martinbalucha/DriveTracker"
+                BranchName: "main"
+              RunOrder: 1
+              OutputArtifacts:
+                - Name: SourceOutput
+        - Name: Build
+          Actions:
+            - Name: Build
+              InputArtifacts:
+                - Name: SourceOutput
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              OutputArtifacts:
+                - Name: BuildOutput
+              Configuration:
+                ProjectName: !Ref DriveTrackerMainBuild
+
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: codepipeline.amazonaws.com
+          Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodePipelineS3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - codepipeline:PutJobSuccessResult
+                  - codepipeline:PutJobFailureResult
+                Resource: '*'
+        - PolicyName: CodeConnectionAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: 'codestar-connections:UseConnection'
+                Resource: arn:aws:codeconnections:us-east-1:240994269822:connection/8a018c9f-47b6-4f5a-8a38-3e274efed4fc
+        - PolicyName: CodeBuildStartPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+                Resource: !GetAtt DriveTrackerMainBuild.Arn
+
+
+  DriveTrackerMainBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: DriveTrackerBuild
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: "buildspec.yml"
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: "aws/codebuild/standard:6.0" # The build environment image (choose the right version)
+        Type: LINUX_CONTAINER
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      TimeoutInMinutes: 30
+      Cache:
+        Type: NO_CACHE
+      SourceVersion: "main"
+      QueuedTimeoutInMinutes: 60
+
+
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodeBuildAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                Resource: "*"
+        - PolicyName: CodePipelineAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codepipeline:PutJobSuccessResult
+                  - codepipeline:PutJobFailureResult
+                Resource: "*"

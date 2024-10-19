@@ -1,0 +1,11 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      dotnet: 8.0.100
+
+  build:
+    commands:
+      - dotnet restore src/DriveTracker.sln
+      - dotnet build src/DriveTracker.sln --configuration Release --no-restore
