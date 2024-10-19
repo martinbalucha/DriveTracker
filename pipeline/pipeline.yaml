@@ -57,8 +57,6 @@ Resources:
         - Name: Deploy
           Actions:
             - Name: Deploy Stack
-              InputArtifacts:
-                - Name: BuildOutput
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS
