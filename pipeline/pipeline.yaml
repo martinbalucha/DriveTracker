@@ -68,6 +68,7 @@ Resources:
                 OutputFileName: DeployResult
                 StackName: DriveTracker-Main
                 TemplatePath: BuildOutput::deploy/application.yml
+                RoleArn: !GetAtt CloudFormationDeployRole.Arn
               InputArtifacts:
                 - Name: BuildOutput
               OutputArtifacts:
@@ -96,8 +97,6 @@ Resources:
                   - s3:ListBucket
                   - codepipeline:PutJobSuccessResult
                   - codepipeline:PutJobFailureResult
-                  - cloudformation:CreateStack
-                  - cloudformation:UpdateStack
                 Resource: '*'
         - PolicyName: CodeConnectionAccessPolicy
           PolicyDocument:
@@ -170,3 +169,25 @@ Resources:
                   - codepipeline:PutJobSuccessResult
                   - codepipeline:PutJobFailureResult
                 Resource: "*"
+
+  CloudFormationDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CloudFormationStackAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:CreateStack
+                  - cloudformation:UpdateStack
+                Resource: "*"
+
