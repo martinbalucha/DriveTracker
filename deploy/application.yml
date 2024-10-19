@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: 'DriveTracker CI/CD pipeline'
+
+Resources:
+
+  DriveTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: main-drive
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: VehicleId
+          AttributeType: S
+        - AttributeName: DriveId_RecordedAtIso8601
+          AttributeType: S
+        - AttributeName: VehicleStatus
+          AttributeType: S
+        - AttributeName: Latitude
+          AttributeType: N
+        - AttributeName: Longitude
+          AttributeType: N
+      KeySchema:
+        - AttributeName: VehicleId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName:  
