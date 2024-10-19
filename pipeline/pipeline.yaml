@@ -140,11 +140,6 @@ Resources:
       SourceVersion: "main"
       QueuedTimeoutInMinutes: 60
 
-  DriveTrackerPrepareDeploy:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: 
-
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
