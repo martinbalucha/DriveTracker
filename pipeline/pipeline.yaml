@@ -97,7 +97,8 @@ Resources:
                   - s3:GetObject
                   - s3:ListBucket
                 Resource: 
-                  !Sub "arn:aws:s3:::${PipelineArtifactBucket}"
+                  - !Sub "arn:aws:s3:::${PipelineArtifactBucket}"
+                  - !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"
               - Effect: Allow
                 Action:
                   - codepipeline:PutJobSuccessResult
@@ -172,7 +173,8 @@ Resources:
                   - s3:PutObject
                   - s3:ListBucket
                 Resource: 
-                  !Sub "arn:aws:s3:::${PipelineArtifactBucket}"
+                  - !Sub "arn:aws:s3:::${PipelineArtifactBucket}"
+                  - !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"
         - PolicyName: CodePipelineAccess
           PolicyDocument:
             Version: "2012-10-17"
