@@ -1,0 +1,18 @@
+[
+    {
+        "ParameterKey": "CodeStarArn",
+        "ParameterValue": "arn:aws:codeconnections:us-east-1:240994269822:connection/8a018c9f-47b6-4f5a-8a38-3e274efed4fc"
+    },
+    {
+        "ParameterKey": "Branch",
+        "ParameterValue": "main"
+    },
+    {
+        "ParameterKey": "DeployStackName",
+        "ParameterValue": "drive-tracker-prod"
+    },
+    {
+        "ParameterKey": "DeployStackName",
+        "ParameterValue": "drive-tracker-prod"
+    }
+]
