@@ -214,12 +214,12 @@ Resources:
               - Effect: Allow
                 Action:
                   - s3:ListBucket
-                Resource: !Sub "arn:aws:s3:::${PipelineArtifactBucket}"
-                
+                Resource: "arn:aws:s3:::drive-tracker-pipelineartifactbucket"
+
               - Effect: Allow
                 Action:
                   - s3:GetObject
-                Resource: !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"
+                Resource: "arn:aws:s3:::drive-tracker-pipelineartifactbucket/*"
                 
               - Effect: Allow
                 Action:
