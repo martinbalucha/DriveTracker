@@ -99,15 +99,6 @@ Resources:
                 Resource: 
                   - !Sub "arn:aws:s3:::${PipelineArtifactBucket}"
                   - !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"
-              - Effect: Allow
-                Action:
-                  - codepipeline:PutJobSuccessResult
-                  - codepipeline:PutJobFailureResult
-                Resource: '*'
-              - Effect: Allow
-                Action:
-                  - cloudformation:DescribeStacks
-                Resource: '*'
         - PolicyName: CodeConnectionAccessPolicy
           PolicyDocument:
             Version: '2012-10-17'
@@ -124,7 +115,23 @@ Resources:
                   - codebuild:StartBuild
                   - codebuild:BatchGetBuilds
                 Resource: !GetAtt DriveTrackerMainBuild.Arn
-
+        - PolicyName: PipelineManipulationPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codepipeline:PutJobSuccessResult
+                  - codepipeline:PutJobFailureResult
+                Resource: '*'
+        - PolicyName: CloudFormationPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:DescribeStacks
+                Resource: '*'
 
   DriveTrackerMainBuild:
     Type: AWS::CodeBuild::Project
