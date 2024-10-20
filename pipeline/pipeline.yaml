@@ -204,7 +204,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: codebuild.amazonaws.com
+              Service: cloudformation.amazonaws.com
             Action: sts:AssumeRole
       Policies:
         - PolicyName: CloudFormationStackAccess
@@ -213,7 +213,17 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                  - s3:ListBucket
+                Resource: !Sub "arn:aws:s3:::${PipelineArtifactBucket}"
+                
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"
+                
+              - Effect: Allow
+                Action:
                   - cloudformation:CreateStack
                   - cloudformation:UpdateStack
-                  - cloudformation:DescribeStacks.
+                  - cloudformation:DescribeStacks
                 Resource: "*"
