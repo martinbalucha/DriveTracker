@@ -9,3 +9,4 @@ phases:
     commands:
       - dotnet restore src/DriveTracker.sln
       - dotnet build src/DriveTracker.sln --configuration Release --no-restore
+      - echo 'Build Finished'
