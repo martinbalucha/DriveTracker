@@ -137,7 +137,7 @@ Resources:
                   - cloudformation:DescribeStacks
                 Resource: '*'
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+          - arn:aws:iam::aws:policy/AmazonS3FullAccess
 
   DriveTrackerMainBuild:
     Type: AWS::CodeBuild::Project
@@ -232,3 +232,21 @@ Resources:
                   - cloudformation:UpdateStack
                   - cloudformation:DescribeStacks
                 Resource: "*"
+  
+  PipelineArtifactBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref PipelineArtifactBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !GetAtt CodePipelineRole.Arn
+            Action:
+              - s3:ListBucket
+              - s3:GetObject
+              - s3:PutObject
+            Resource:
+              - "arn:aws:s3:::drive-tracker-pipelineartifactbucket"
+              - "arn:aws:s3:::drive-tracker-pipelineartifactbucket/*"
