@@ -10,9 +10,5 @@
     {
         "ParameterKey": "DeployStackName",
         "ParameterValue": "drive-tracker-prod"
-    },
-    {
-        "ParameterKey": "DeployStackName",
-        "ParameterValue": "drive-tracker-prod"
     }
 ]

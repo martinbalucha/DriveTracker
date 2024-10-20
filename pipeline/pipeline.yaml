@@ -2,6 +2,15 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 Description: 'DriveTracker CI/CD pipeline'
 
+Parameters:
+  CodeStarArn:
+    Type: String
+  Branch:
+    Type: String
+  DeployStackName:
+    Type: String
+  
+
 Resources:
 
   PipelineArtifactBucket:
