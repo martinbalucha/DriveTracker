@@ -136,6 +136,8 @@ Resources:
                 Action:
                   - cloudformation:DescribeStacks
                 Resource: '*'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
 
   DriveTrackerMainBuild:
     Type: AWS::CodeBuild::Project
