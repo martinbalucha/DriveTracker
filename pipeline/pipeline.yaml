@@ -95,13 +95,13 @@ Resources:
                 Action:
                   - s3:ListBucket
                 Resource: 
-                  - !Sub "arn:aws:s3:::${PipelineArtifactBucket}"                  
+                  - "arn:aws:s3:::drive-tracker-pipelineartifactbucket"                  
               - Effect: Allow
                 Action:
                   - s3:PutObject
                   - s3:GetObject
                 Resource:
-                  - !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"
+                  - "arn:aws:s3:::drive-tracker-pipelineartifactbucket/*"
 
         - PolicyName: CodeConnectionAccessPolicy
           PolicyDocument:
@@ -184,8 +184,8 @@ Resources:
                   - s3:PutObject
                   - s3:ListBucket
                 Resource: 
-                  - !Sub "arn:aws:s3:::${PipelineArtifactBucket}"
-                  - !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"
+                  - arn:aws:s3:::drive-tracker-pipelineartifactbucket"
+                  - arn:aws:s3:::drive-tracker-pipelineartifactbucket/*"
         - PolicyName: CodePipelineAccess
           PolicyDocument:
             Version: "2012-10-17"
