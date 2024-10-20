@@ -9,7 +9,7 @@ Resources:
     Properties:
       VersioningConfiguration:
         Status: Enabled
-        BucketName: !Sub "${AWS::StackName}-pipelineartifactbucket"
+      BucketName: 'drive-tracker-pipelineartifactbucket'
       AccessControl: Private
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
