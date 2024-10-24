@@ -45,7 +45,7 @@ Resources:
 
         - Name: Build
           Actions:
-            - Name: Build Solution
+            - Name: BuildSolution
               ActionTypeId:
                 Category: Build
                 Owner: AWS
@@ -59,8 +59,8 @@ Resources:
                 ProjectName: !Ref DriveTrackerBuild
         - Name: Deploy
           Actions:
-            - Name: !Join [ "-", ["Deploy", !Ref DeployStackName] ]
-              ActionType:
+            - Name: !Join [ "-", [ "Deploy", !Ref DeployStackName ] ]
+              ActionTypeId:
                 Category: Deploy
                 Owner: AWS
                 Provider: CloudFormation
@@ -71,6 +71,7 @@ Resources:
                 OutputFileName: DeployResult
                 StackName: !Ref DeployStackName
                 TemplatePath: BuildOutput::deploy/application.yml
+                RoleArn: !GetAtt CodeDeployRole.Arn
               InputArtifacts:
                 - Name: BuildOutput
               RunOrder: 1
@@ -97,6 +98,14 @@ Resources:
                   - codepipeline:PutJobSuccessResult
                   - codepipeline:PutJobFailureResult
                 Resource: '*'
+        - PolicyName: CodePipelineS3ListAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+                - s3:ListBucket
+              Resource: '*'
         - PolicyName: CodeConnectionAccessPolicy
           PolicyDocument:
             Version: '2012-10-17'
@@ -113,12 +122,20 @@ Resources:
                   - codebuild:StartBuild
                   - codebuild:BatchGetBuilds
                 Resource: !GetAtt DriveTrackerBuild.Arn
+        - PolicyName: CloudFormationStartPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:DescribeStacks
+                Resource: '*'
 
 
   DriveTrackerBuild:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: !Sub "${AWS::StackName}-Build"
+      Name: !Sub "${DeployStackName}-Build"
       Source:
         Type: CODEPIPELINE
         BuildSpec: "buildspec.yml"
@@ -126,7 +143,7 @@ Resources:
         Type: CODEPIPELINE
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/standard:8.0"
+        Image: "aws/codebuild/standard:6.0"
         Type: LINUX_CONTAINER
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       TimeoutInMinutes: 30
@@ -162,3 +179,52 @@ Resources:
                   - codepipeline:PutJobSuccessResult
                   - codepipeline:PutJobFailureResult
                 Resource: "*"
+        - PolicyName: CloudWatchBuildLog
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:CreateLogGroup
+                Resource: "*"
+  
+  CodeDeployRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: cloudformation.amazonaws.com    # Changed from codebuild.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: CodeDeployRole
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:PutObject
+                    - s3:ListBucket    # Added ListBucket permission
+                    - s3:GetBucketLocation
+                  Resource: 
+                    - !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"    # For object-level actions
+                    - !Sub "arn:aws:s3:::${PipelineArtifactBucket}"      # For bucket-level actions
+                - Effect: Allow
+                  Action:
+                    - cloudformation:CreateStack
+                    - cloudformation:DeleteStack
+                    - cloudformation:DescribeStacks
+                    - cloudformation:UpdateStack
+                    - cloudformation:CreateChangeSet
+                    - cloudformation:DeleteChangeSet
+                    - cloudformation:DescribeChangeSet
+                    - cloudformation:ExecuteChangeSet
+                    - cloudformation:SetStackPolicy
+                    - cloudformation:ValidateTemplate
+                    - iam:PassRole
+                  Resource: '*'  
+                  
