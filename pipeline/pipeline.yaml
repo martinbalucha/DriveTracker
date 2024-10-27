@@ -9,10 +9,8 @@ Parameters:
     Type: String
   DeployStackName:
     Type: String
-  
 
 Resources:
-
   PipelineArtifactBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -57,9 +55,11 @@ Resources:
                 - Name: BuildOutput
               Configuration:
                 ProjectName: !Ref DriveTrackerBuild
+
         - Name: Deploy
           Actions:
             - Name: !Join [ "-", [ "Deploy", !Ref DeployStackName ] ]
+              RoleArn: !GetAtt CodeDeployRole.Arn
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS
@@ -82,10 +82,10 @@ Resources:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
-          Effect: Allow
-          Principal:
-            Service: codepipeline.amazonaws.com
-          Action: sts:AssumeRole
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
         - PolicyName: CodePipelineS3Access
           PolicyDocument:
@@ -93,19 +93,24 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                  - iam:PassRole
+                Resource: "*"
+              - Effect: Allow
+                Action:
                   - s3:PutObject
-                  - s3:GetObject
-                  - codepipeline:PutJobSuccessResult
-                  - codepipeline:PutJobFailureResult
-                Resource: '*'
-        - PolicyName: CodePipelineS3ListAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-            - Effect: Allow
-              Action:
-                - s3:ListBucket
-              Resource: '*'
+                  - s3:GetObject*
+                  - s3:GetBucket*
+                  - s3:List*
+                Resource: 
+                  - !Join
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref PipelineArtifactBucket
+                  - !Join
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref PipelineArtifactBucket
+                      - /*
         - PolicyName: CodeConnectionAccessPolicy
           PolicyDocument:
             Version: '2012-10-17'
@@ -120,7 +125,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - codebuild:StartBuild
-                  - codebuild:BatchGetBuilds
+                  - codebuild:BatchGetBuilds                  
                 Resource: !GetAtt DriveTrackerBuild.Arn
         - PolicyName: CloudFormationStartPolicy
           PolicyDocument:
@@ -128,9 +133,18 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                  - cloudformation:CreateStack
+                  - cloudformation:DeleteStack
                   - cloudformation:DescribeStacks
+                  - cloudformation:UpdateStack
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:SetStackPolicy
+                  - cloudformation:ValidateTemplate
+                  - sts:AssumeRole
                 Resource: '*'
-
 
   DriveTrackerBuild:
     Type: AWS::CodeBuild::Project
@@ -157,7 +171,9 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: codebuild.amazonaws.com
+              Service:
+                - codebuild.amazonaws.com
+                - codepipeline.amazonaws.com
             Action: sts:AssumeRole
       Policies:
         - PolicyName: CodeBuildPolicy
@@ -166,10 +182,20 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - s3:GetObject
                   - s3:PutObject
-                  - s3:GetBucketLocation
-                Resource: !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"
+                  - s3:GetObject*
+                  - s3:GetBucket*
+                  - s3:ListBucket
+                Resource: 
+                  - !Join
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref PipelineArtifactBucket
+                  - !Join
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref PipelineArtifactBucket
+                      - /*
         - PolicyName: CodePipelineAccess
           PolicyDocument:
             Version: "2012-10-17"
@@ -187,44 +213,55 @@ Resources:
                 Action:
                   - logs:CreateLogStream
                   - logs:CreateLogGroup
+                  - logs:PutLogEvents
                 Resource: "*"
   
   CodeDeployRole:
-      Type: AWS::IAM::Role
-      Properties:
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service: cloudformation.amazonaws.com    # Changed from codebuild.amazonaws.com
-              Action: sts:AssumeRole
-        Policies:
-          - PolicyName: CodeDeployRole
-            PolicyDocument:
-              Version: "2012-10-17"
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - s3:GetObject
-                    - s3:PutObject
-                    - s3:ListBucket    # Added ListBucket permission
-                    - s3:GetBucketLocation
-                  Resource: 
-                    - !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"    # For object-level actions
-                    - !Sub "arn:aws:s3:::${PipelineArtifactBucket}"      # For bucket-level actions
-                - Effect: Allow
-                  Action:
-                    - cloudformation:CreateStack
-                    - cloudformation:DeleteStack
-                    - cloudformation:DescribeStacks
-                    - cloudformation:UpdateStack
-                    - cloudformation:CreateChangeSet
-                    - cloudformation:DeleteChangeSet
-                    - cloudformation:DescribeChangeSet
-                    - cloudformation:ExecuteChangeSet
-                    - cloudformation:SetStackPolicy
-                    - cloudformation:ValidateTemplate
-                    - iam:PassRole
-                  Resource: '*'  
-                  
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: 
+                - !GetAtt CodePipelineRole.Arn
+              Service: 
+                - cloudformation.amazonaws.com
+                - codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodeDeployRole
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject*
+                  - s3:GetBucket*
+                  - s3:List*
+                Resource: 
+                  - !Join
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref PipelineArtifactBucket
+                  - !Join
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref PipelineArtifactBucket
+                      - /*
+              - Effect: Allow
+                Action:
+                  - cloudformation:CreateStack
+                  - cloudformation:DeleteStack
+                  - cloudformation:DescribeStacks
+                  - cloudformation:UpdateStack
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:SetStackPolicy
+                  - cloudformation:ValidateTemplate
+                  - iam:PassRole
+                Resource: '*'
