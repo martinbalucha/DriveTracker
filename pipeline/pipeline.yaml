@@ -59,7 +59,6 @@ Resources:
         - Name: Deploy
           Actions:
             - Name: !Join [ "-", [ "Deploy", !Ref DeployStackName ] ]
-              RoleArn: !GetAtt CodeDeployRole.Arn
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS
@@ -74,7 +73,7 @@ Resources:
                 RoleArn: !GetAtt CodeDeployRole.Arn
               InputArtifacts:
                 - Name: BuildOutput
-              RunOrder: 1
+              RunOrder: 2
 
   CodePipelineRole:
     Type: AWS::IAM::Role
@@ -87,7 +86,7 @@ Resources:
               Service: codepipeline.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: CodePipelineS3Access
+        - PolicyName: CodePipelineAccess
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -98,9 +97,9 @@ Resources:
               - Effect: Allow
                 Action:
                   - s3:PutObject
-                  - s3:GetObject*
-                  - s3:GetBucket*
-                  - s3:List*
+                  - s3:GetObject
+                  - s3:GetBucket
+                  - s3:ListBucket
                 Resource: 
                   - !Join
                     - ''
@@ -111,26 +110,14 @@ Resources:
                     - - 'arn:aws:s3:::'
                       - !Ref PipelineArtifactBucket
                       - /*
-        - PolicyName: CodeConnectionAccessPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
               - Effect: Allow
                 Action: 'codestar-connections:UseConnection'
                 Resource: !Ref CodeStarArn
-        - PolicyName: CodeBuildStartPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
               - Effect: Allow
                 Action:
                   - codebuild:StartBuild
                   - codebuild:BatchGetBuilds                  
                 Resource: !GetAtt DriveTrackerBuild.Arn
-        - PolicyName: CloudFormationStartPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
               - Effect: Allow
                 Action:
                   - cloudformation:CreateStack
@@ -143,7 +130,11 @@ Resources:
                   - cloudformation:ExecuteChangeSet
                   - cloudformation:SetStackPolicy
                   - cloudformation:ValidateTemplate
-                  - sts:AssumeRole
+                  #- sts:AssumeRole
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - kms:*
                 Resource: '*'
 
   DriveTrackerBuild:
@@ -196,19 +187,12 @@ Resources:
                     - - 'arn:aws:s3:::'
                       - !Ref PipelineArtifactBucket
                       - /*
-        - PolicyName: CodePipelineAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
+                Resource: '*'
               - Effect: Allow
                 Action:
                   - codepipeline:PutJobSuccessResult
                   - codepipeline:PutJobFailureResult
                 Resource: "*"
-        - PolicyName: CloudWatchBuildLog
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
               - Effect: Allow
                 Action:
                   - logs:CreateLogStream
@@ -240,7 +224,7 @@ Resources:
                   - s3:PutObject
                   - s3:GetObject*
                   - s3:GetBucket*
-                  - s3:List*
+                  #- s3:List*
                 Resource: 
                   - !Join
                     - ''
@@ -264,4 +248,8 @@ Resources:
                   - cloudformation:SetStackPolicy
                   - cloudformation:ValidateTemplate
                   - iam:PassRole
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - kms:*
                 Resource: '*'
