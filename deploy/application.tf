@@ -17,6 +17,11 @@ variable "subscription_id" {
     type = string
 }
 
+variable "region" {
+    description = "Deployment Region"
+    type = string
+}
+
 provider "azurerm" {
     features {}
     subscription_id = "${var.subscription_id}"
@@ -24,6 +29,36 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "resource-group" {
   name = "${var.environment}-resource-group"
-  location = "West Europe"
+  location = "${vars.region}"
+}
+
+resource "azurerm_service_plan" "service-plan" {
+    name = "${vars.environment}-service-plan"
+    location = "${vars.region}"
+    resource_group_name = azurerm_resource_group.resource-group.name
+    os_type = "Linux"
+    sku_name = "F1"
+}
+
+resource "azurerm_linux_function_app" "web-api" {
+  name = "${var.environment}-restapi"
+  location = "${vars.region}"
+  resource_group_name = azurerm_resource_group.resource-group.id
+  service_plan_id = azurerm_service_plan.service-plan.id
+
+  site_config {
+    always_on = false
+  }
+}
+
+resource "azurerm_iothub" "iot-hub" {
+  name = "${vars.environment}-iothub"
+  location = "${vars.region}"
+  resource_group_name = azurerm_resource_group.resource-group.id
+
+  sku {
+    name = "F1"
+    capacity = 1
+  }
 }
 
