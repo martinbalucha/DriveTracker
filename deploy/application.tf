@@ -12,6 +12,10 @@ variable "environment" {
     type = string
 }
 
+locals {
+  resource_prefix = "dt-" + "${vars.environment}"
+}
+
 variable "subscription_id" {
     description = "ID of an Azure subscription"
     type = string
@@ -22,27 +26,29 @@ variable "region" {
     type = string
 }
 
+
+
 provider "azurerm" {
     features {}
     subscription_id = "${var.subscription_id}"
 }
 
 resource "azurerm_resource_group" "resource-group" {
-  name = "${var.environment}-resource-group"
+  name = "${locals.resource_prefix}-resource-group"
   location = "${vars.region}"
 }
 
 resource "azurerm_service_plan" "service-plan" {
-    name = "${vars.environment}-service-plan"
-    location = "${vars.region}"
+    name = "${locals.resource_prefix}-service-plan"
+    location = azurerm_resource_group.resource-group.location
     resource_group_name = azurerm_resource_group.resource-group.name
     os_type = "Linux"
     sku_name = "F1"
 }
 
 resource "azurerm_linux_function_app" "web-api" {
-  name = "${var.environment}-restapi"
-  location = "${vars.region}"
+  name = "${locals.resource_prefix}-restapi"
+  location = azurerm_resource_group.resource-group.location
   resource_group_name = azurerm_resource_group.resource-group.id
   service_plan_id = azurerm_service_plan.service-plan.id
 
@@ -52,8 +58,8 @@ resource "azurerm_linux_function_app" "web-api" {
 }
 
 resource "azurerm_iothub" "iot-hub" {
-  name = "${vars.environment}-iothub"
-  location = "${vars.region}"
+  name = "${locals.resource_prefix}-iothub"
+  location = azurerm_resource_group.resource-group.location
   resource_group_name = azurerm_resource_group.resource-group.id
 
   sku {
@@ -61,4 +67,29 @@ resource "azurerm_iothub" "iot-hub" {
     capacity = 1
   }
 }
+
+resource "azurerm_cosmosdb_account" "cosmos" {
+  name = "${locals.resource_prefix}-drivedb"
+  location = azurerm_resource_group.resource-group.location
+  resource_group_name = azurerm_resource_group.resource-group.name
+  offer_type = "Standard"
+  kind = "GlobalDocumentDB"
+  free_tier_enabled = true
+
+  consistency_policy {
+    consistency_level = "Session"
+  }
+
+  geo_location {
+    location = "North Europe"
+    failover_priority = 0
+  }
+}
+
+resource "azurerm_cosmosdb_table" "drive-table" {
+  name = "${locals.resource_prefix}-drive-data"
+  resource_group_name = azurerm_resource_group.resource-group.name
+  account_name = azurerm_cosmosdb_account.cosmos.name
+}
+
 
