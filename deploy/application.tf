@@ -12,10 +12,6 @@ variable "environment" {
     type = string
 }
 
-locals {
-  resource_prefix = "dt-" + "${vars.environment}"
-}
-
 variable "subscription_id" {
     description = "ID of an Azure subscription"
     type = string
@@ -26,11 +22,13 @@ variable "region" {
     type = string
 }
 
-
-
 provider "azurerm" {
     features {}
     subscription_id = "${var.subscription_id}"
+}
+
+locals {
+  resource_prefix = "dt-${vars.environment}"
 }
 
 resource "azurerm_resource_group" "resource-group" {
